@@ -6,6 +6,7 @@ export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  className?: string;
 };
 
 export function ThemedText({
@@ -13,19 +14,22 @@ export function ThemedText({
   lightColor,
   darkColor,
   type = 'default',
+  className,
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
   return (
     <Text
+      className={className ? className : undefined}
       style={[
-        { color },
+        // { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'link' ? styles.link : undefined,
+        { fontFamily: 'Nunito' },
         style,
       ]}
       {...rest}
@@ -35,26 +39,26 @@ export function ThemedText({
 
 const styles = StyleSheet.create({
   default: {
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 24,
   },
   defaultSemiBold: {
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 24,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   title: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: 'bold',
     lineHeight: 32,
   },
   subtitle: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
   },
   link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
+    lineHeight: 24,
+    fontSize: 14,
+    fontWeight: '700',
   },
 });
