@@ -1,12 +1,22 @@
-import { View } from "react-native";
+import { Pressable, View } from "react-native";
 import Illustration from "@/assets/illustration/hello.svg"
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import ThemedTextInput from "@/components/ThemedTextInput";
 import ThemedPhoneInput from "@/components/ThemedPhoneInput";
 import ThemedPressable from "@/components/ThemedPressable";
+import { useRouter } from "expo-router";
 
 export default function SignUpScreen() {
+    const router = useRouter();
+
+    function redirectToSignIn() {
+        router.push('/sign-in');
+    }
+
+    function handleSignUp() {
+        router.push('/otp-verification');
+    }
     return (
         <ThemedView className="flex justify-center items-center h-full gap-7">
             <View className="flex justify-center items-center">
@@ -27,7 +37,7 @@ export default function SignUpScreen() {
                 </View>
             </View>
 
-            <ThemedPressable>
+            <ThemedPressable onPress={handleSignUp}>
                 Lanjutkan
             </ThemedPressable>
 
@@ -35,9 +45,11 @@ export default function SignUpScreen() {
                 <ThemedText>
                     Sudah punya akun?
                 </ThemedText>
-                <ThemedText type="link" className="text-primary">
-                    Masuk
-                </ThemedText>
+                <Pressable onPress={redirectToSignIn}>
+                    <ThemedText type="link" className="text-primary">
+                        Masuk
+                    </ThemedText>
+                </Pressable>
             </View>
         </ThemedView>
     )
