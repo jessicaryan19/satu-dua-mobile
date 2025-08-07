@@ -10,16 +10,14 @@ export default function ThemedPhoneInput({
     className,
 }: ThemedPhoneInputProps) {
     return (
-        <View>
-            <View className="absolute left-3 top-3">
-                <ThemedText type="default" className="border-r pr-3 border-darkGrey-border">
-                    🇮🇩 +62
-                </ThemedText>
+        <View className={`flex-row items-center border border-darkGrey-border rounded-2xl ${className}`}>
+            <View className="px-3 border-r border-darkGrey-border">
+                <ThemedText type="default">🇮🇩 +62</ThemedText>
             </View>
             <TextInput
                 keyboardType="phone-pad"
                 placeholder={placeholder}
-                className={`flex p-3 ps-20 border border-darkGrey-border rounded-2xl placeholder:text-darkGrey-label font-nunito ${className}`}
+                className="flex-1 p-3 ps-2 placeholder:text-darkGrey-label font-nunito rounded-2xl focus:outline-none"
             />
         </View>
     )

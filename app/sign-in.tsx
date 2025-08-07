@@ -9,7 +9,7 @@ import { useRouter } from "expo-router";
 
 export default function SignInScreen() {
     const router = useRouter();
-    
+
     function redirectToSignUp() {
         router.push('/sign-up');
     }
@@ -23,7 +23,7 @@ export default function SignInScreen() {
             </View>
 
             <View className="w-full flex gap-4">
-                <View className="w-full">
+                <View className="w-full flex gap-1">
                     <ThemedText type="defaultSemiBold">Masukkan Nomor Telepon Aktif Kamu</ThemedText>
                     <ThemedPhoneInput placeholder="Nomor Telepon" />
                 </View>

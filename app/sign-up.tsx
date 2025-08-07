@@ -26,12 +26,12 @@ export default function SignUpScreen() {
             </View>
 
             <View className="w-full flex gap-4">
-                <View className="w-full">
+                <View className="w-full flex gap-1">
                     <ThemedText type="defaultSemiBold">Siapa Nama Lengkapmu?</ThemedText>
                     <ThemedTextInput placeholder="Nama Lengkap" />
                 </View>
 
-                <View className="w-full">
+                <View className="w-full flex gap-1">
                     <ThemedText type="defaultSemiBold">Masukkan Nomor Telepon Aktif Kamu</ThemedText>
                     <ThemedPhoneInput placeholder="Nomor Telepon" />
                 </View>
