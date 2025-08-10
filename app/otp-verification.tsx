@@ -13,12 +13,14 @@ import { AuthUserData } from "@/types/auth";
 export default function OTPVerificationScreen() {
     const router = useRouter();
     const [otp, setOtp] = useState("");
+    const [error, setError] = useState("");
     const { formattedTime, isActive, resetCountdown } = useCountdown(120);
     const { email, phone, name } = useLocalSearchParams<AuthUserData>();
 
     async function handleOtpVerification() {
         const { data, error } = await verifyOtp(email, otp);
         if (error) {
+            setError("OTP tidak valid atau kedaluwarsa. Silakan coba lagi.");
             return;
         }
         console.log(data)
@@ -28,10 +30,16 @@ export default function OTPVerificationScreen() {
     async function handleResendOtp() {
         if (phone && name) {
             const { error } = await signUpWithOtp(email, phone, name);
-            if (error) console.error("Error signing up:", error);
+            if (error) {
+                console.error("Error resending OTP:", error);
+                return;
+            }
         } else {
             const { error } = await signInWithOtp(email);
-            if (error) console.error("Error signing in:", error);
+            if (error) {
+                console.error("Error resending OTP:", error);
+                return;
+            }
         }
         setOtp("");
         resetCountdown();
@@ -48,11 +56,14 @@ export default function OTPVerificationScreen() {
                 </ThemedText>
             </View>
 
-            <OtpInput
-                onTextChange={(value) => setOtp(value)}
-                numberOfDigits={6}
-                focusColor={"#172090"}
-            />
+            <View className="w-full flex gap-2">
+                <OtpInput
+                    onTextChange={(value) => setOtp(value)}
+                    numberOfDigits={6}
+                    focusColor={"#172090"}
+                />
+                {error ? <ThemedText type="danger">{error}</ThemedText> : null}
+            </View>
 
             <View className="flex flex-row items-center justify-center gap-1">
                 <Pressable onPress={handleResendOtp} disabled={isActive}>

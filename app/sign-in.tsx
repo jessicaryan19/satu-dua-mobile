@@ -43,14 +43,10 @@ export default function SignInScreen() {
                         onChange={(e) => setEmail(e.nativeEvent.text)}
                         value={email}
                     />
+                    {error ? <ThemedText type="danger">{error}</ThemedText> : null}
                 </View>
             </View>
-            <View>
-                <ThemedText type="defaultSemiBold" className="text-center">
-                    { error}
-                </ThemedText>
-            </View>
-
+            
             <ThemedPressable onPress={handleSignIn} disabled={!email}>
                 Lanjutkan
             </ThemedPressable>
