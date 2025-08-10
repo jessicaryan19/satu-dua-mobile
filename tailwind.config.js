@@ -7,6 +7,7 @@ module.exports = {
     extend: {
       colors: {
         primary: "#172090",
+        disabled: "#8A8FC7",
         darkGrey: {
           border: "#C7C7C7",
           label: "#757575",

@@ -6,28 +6,46 @@ import 'react-native-reanimated';
 import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
+import AuthProvider, { useAuth } from '@/hooks/useAuth';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
   const [loaded] = useFonts({
     Nunito: require('@/assets/fonts/Nunito-Regular.ttf'),
+    NunitoBold: require('@/assets/fonts/Nunito-Bold.ttf'),
   });
 
   if (!loaded) {
-    // Async font loading only occurs in development.
     return null;
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="sign-up" options={{ headerShown: false }} />
-        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
-        <Stack.Screen name="otp-verification" options={{ headerShown: false }} />
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <AuthProvider>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+        <RootNavigation />
+        <StatusBar style="auto" />
+      </ThemeProvider>
+    </AuthProvider>
   );
+}
+
+function RootNavigation() {
+  const { session } = useAuth();
+
+  return (
+    <Stack>
+      <Stack.Protected guard={session === null}>
+        <Stack.Screen name="sign-in" options={{ headerShown: false }} />
+        <Stack.Screen name="sign-up" options={{ headerShown: false }} />
+        <Stack.Screen name="otp-verification" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Protected guard={session !== null}>
+        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      </Stack.Protected>
+
+      <Stack.Screen name="+not-found" />
+    </Stack>
+  )
 }

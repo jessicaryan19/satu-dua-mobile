@@ -1,17 +1,16 @@
-import { TextInput } from "react-native";
+import { NativeSyntheticEvent, TextInput, TextInputChangeEventData, TextInputProps } from "react-native";
 
-export type ThemedTextInputProps = {
-    placeholder?: string;
+export type ThemedTextInputProps = TextInputProps &{
     className?: string;
 }
 export default function ThemedTextInput({
-    placeholder,
     className,
+    ...rest
 }: ThemedTextInputProps) {
     return (
         <TextInput
-            placeholder={placeholder}
             className={`flex p-3 border border-darkGrey-border rounded-2xl placeholder:text-darkGrey-label font-nunito ${className}`}
+            {...rest}
         />
     )
 }
