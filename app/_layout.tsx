@@ -36,6 +36,7 @@ function RootNavigation() {
   return (
     <Stack>
       <Stack.Protected guard={session === null}>
+        <Stack.Screen name="onboarding" options={{ headerShown: false }} />
         <Stack.Screen name="sign-in" options={{ headerShown: false }} />
         <Stack.Screen name="sign-up" options={{ headerShown: false }} />
         <Stack.Screen name="otp-verification" options={{ headerShown: false }} />

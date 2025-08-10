@@ -8,6 +8,7 @@ module.exports = {
       colors: {
         primary: "#172090",
         disabled: "#8A8FC7",
+        accent: "#D8E7FF",
         darkGrey: {
           border: "#C7C7C7",
           label: "#757575",
