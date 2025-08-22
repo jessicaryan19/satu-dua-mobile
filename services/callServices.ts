@@ -1,21 +1,30 @@
+// services/RNCallService.ts
+import { startAndJoinAgoraChannel, leaveAgoraChannel } from '@/lib/agora';
+import { IRtcEngine } from 'react-native-agora';
+
 export interface RNCallState {
-  channelName?: string;
-  token?: string;
   appId?: string;
+  token?: string;
+  channelName?: string;
   isChannelOwner: boolean;
+  joined: boolean;
+  engine?: IRtcEngine;
 }
 
 export interface RNCallCallbacks {
   onError?: (error: string) => void;
-  onChannelStarted?: (data: { channelName: string; token: string; appId: string }) => void;
+  onChannelJoined?: (channelName: string) => void;
+  onChannelLeft?: () => void;
 }
 
 export class RNCallService {
   private state: RNCallState = {
-    channelName: undefined,
-    token: undefined,
     appId: undefined,
+    token: undefined,
+    channelName: undefined,
     isChannelOwner: false,
+    joined: false,
+    engine: undefined,
   };
 
   private callbacks: RNCallCallbacks = {};
@@ -28,57 +37,81 @@ export class RNCallService {
     return { ...this.state };
   }
 
-  public async startChannel(): Promise<{ success: boolean; channelName?: string; token?: string; appId?: string; error?: string }> {
+  /** Start a channel on backend and auto-join Agora */
+  public async startAndJoinChannel(): Promise<{ success: boolean; channelName?: string; error?: string }> {
     try {
+      // 1. Call backend to start channel
       const apiEndpoint = `${process.env.EXPO_PUBLIC_AGORA_CREDENTIALS_API}/start-call` || "http://localhost:3000/api/start-call";
-      const requestOptions = {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        }
-      };
+      const res = await fetch(apiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
 
-      const res = await fetch(apiEndpoint, requestOptions);
+      if (!res.ok) throw new Error(`API request failed: ${res.status} ${res.statusText}`);
+      const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(`API request failed: ${res.status} ${res.statusText}`);
-      }
+      const appId = data.appId;
+      const token = data.token;
+      const channelName = data.channel || data.channelName;
 
-      const responseData = await res.json();
+      if (!appId || !token || !channelName) throw new Error('Invalid response from backend: missing appId, token, or channel');
 
-      const appId = responseData.appId;
-      const channel = responseData.channel || responseData.channelName;
-      const token = responseData.token;
-
-      if (!appId || !channel || !token) {
-        throw new Error("Invalid response: missing appId, channel, or token");
-      }
-
-      this.state = {
+      // 2. Start Agora engine and join
+      const session = startAndJoinAgoraChannel(
         appId,
-        channelName: channel,
         token,
-        isChannelOwner: true
+        channelName,
+        (ch) => {
+          this.state.joined = true;
+          this.callbacks.onChannelJoined?.(ch);
+        },
+        () => {
+          this.state.joined = false;
+          this.callbacks.onChannelLeft?.();
+        },
+        (err) => {
+          this.callbacks.onError?.(err);
+        }
+      );
+
+      if (!session) throw new Error('Failed to create/join Agora channel');
+
+      // 3. Save state
+      this.state = {
+        ...this.state,
+        appId,
+        token,
+        channelName,
+        isChannelOwner: true,
+        engine: session.engine,
       };
 
-      this.callbacks.onChannelStarted?.({ channelName: channel, token, appId });
-
-      console.log(`Successfully started channel: ${channel}`);
-      return { success: true, channelName: channel, token, appId };
+      return { success: true, channelName };
     } catch (error: any) {
-      const errorMessage = `Failed to start channel: ${error.message}`;
-      console.error(errorMessage, error);
+      const errorMessage = `❌ Failed to start/join channel: ${error.message}`;
+      console.error(errorMessage);
       this.callbacks.onError?.(errorMessage);
       return { success: false, error: errorMessage };
     }
   }
 
-  public cleanup(): void {
+  /** Leave Agora channel and clean up */
+  public async leaveChannel(): Promise<void> {
+    if (this.state.engine) {
+      leaveAgoraChannel(this.state.engine);
+      this.state.engine = undefined;
+    }
+    this.state.joined = false;
+    this.callbacks.onChannelLeft?.();
+  }
+
+  /** Full cleanup */
+  public async cleanup(): Promise<void> {
+    await this.leaveChannel();
     this.state = {
-      channelName: undefined,
-      token: undefined,
       appId: undefined,
+      token: undefined,
+      channelName: undefined,
       isChannelOwner: false,
+      joined: false,
+      engine: undefined,
     };
   }
 }
