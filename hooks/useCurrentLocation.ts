@@ -34,7 +34,7 @@ export function useCurrentLocation() {
                     latitude: currentLocation.coords.latitude,
                     longitude: currentLocation.coords.longitude,
                 });
-                const addressHeader = `${address.name ?? ""}, ${address.street ?? ""} ${address.streetNumber ?? ""}`.trim();
+                const addressHeader = `${address.street ?? ""} ${address.streetNumber ?? ""}`.trim();
                 const detailParts = [
                     address.district,
                     address.subregion,

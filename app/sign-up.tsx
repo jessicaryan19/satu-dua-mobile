@@ -1,4 +1,4 @@
-import { Pressable, View } from "react-native";
+import { Pressable, View, KeyboardAvoidingView, ScrollView, Platform, TouchableWithoutFeedback, Keyboard } from "react-native";
 import Illustration from "@/assets/illustration/hello.svg"
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
@@ -18,11 +18,12 @@ export default function SignUpScreen() {
     function redirectToSignIn() {
         router.push('/sign-in');
     }
+
     async function handleSignUp() {
         const phoneFormatted = '+62' + phone;
         const emailFormatted = email.toLowerCase();
         const nameFormatted = name.trim().toUpperCase();
-        
+
         const { data, error } = await signUpWithOtp(emailFormatted, phoneFormatted, nameFormatted);
         if (error) {
             console.error("Error signing up:", error);
@@ -33,58 +34,64 @@ export default function SignUpScreen() {
     }
 
     return (
-        <ThemedView className="flex h-full justify-center items-center gap-[42px]">
-            <View className="flex justify-center items-center">
-                <Illustration width={200} height={200} />
-                <ThemedText type="title" className="text-primary w-full text-center">Selamat Datang di Satudua!</ThemedText>
-                <ThemedText>Buat akunmu agar kami dapat segera melayanimu.</ThemedText>
-            </View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === "ios" ? "padding" : undefined}
+        >
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <ScrollView
+                    contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center", gap: 42, padding: 20 }}
+                    keyboardShouldPersistTaps="handled"
+                >
+                    <View className="flex justify-center items-center">
+                        <Illustration width={200} height={200} />
+                        <ThemedText type="title" className="text-primary w-full text-center">Selamat Datang di Satudua!</ThemedText>
+                        <ThemedText>Buat akunmu agar kami dapat segera melayanimu.</ThemedText>
+                    </View>
 
-            <View className="w-full flex gap-4">
-                <View className="w-full flex gap-1">
-                    <ThemedText type="defaultSemiBold">Siapa Nama Lengkapmu?</ThemedText>
-                    <ThemedTextInput
-                        placeholder="Nama Lengkap"
-                        onChange={(e) => setName(e.nativeEvent.text)}
-                        value={name}
-                    />
-                </View>
+                    <View className="w-full flex gap-4">
+                        <View className="w-full flex gap-1">
+                            <ThemedText type="defaultSemiBold">Siapa Nama Lengkapmu?</ThemedText>
+                            <ThemedTextInput
+                                placeholder="Nama Lengkap"
+                                onChange={(e) => setName(e.nativeEvent.text)}
+                                value={name}
+                            />
+                        </View>
 
-                <View className="w-full flex gap-1">
-                    <ThemedText type="defaultSemiBold">Masukkan Email Aktifmu</ThemedText>
-                    <ThemedTextInput
-                        placeholder="Email"
-                        onChange={(e) => setEmail(e.nativeEvent.text)}
-                        value={email}
-                    />
-                </View>
+                        <View className="w-full flex gap-1">
+                            <ThemedText type="defaultSemiBold">Masukkan Email Aktifmu</ThemedText>
+                            <ThemedTextInput
+                                placeholder="Email"
+                                onChange={(e) => setEmail(e.nativeEvent.text)}
+                                value={email}
+                            />
+                        </View>
 
-                <View className="w-full flex gap-1">
-                    <ThemedText type="defaultSemiBold">Masukkan Nomor Telepon Aktif</ThemedText>
-                    <ThemedPhoneInput
-                        placeholder="Nomor Telepon"
-                        onChange={(e) => setPhone(e.nativeEvent.text)}
-                        value={phone}
-                    />
-                </View>
-            </View>
+                        <View className="w-full flex gap-1">
+                            <ThemedText type="defaultSemiBold">Masukkan Nomor Telepon Aktif</ThemedText>
+                            <ThemedPhoneInput
+                                placeholder="Nomor Telepon"
+                                onChange={(e) => setPhone(e.nativeEvent.text)}
+                                value={phone}
+                            />
+                        </View>
+                    </View>
 
-            <View className="w-full flex gap-4">
-                <ThemedPressable onPress={handleSignUp} disabled={!name || !email || !phone}>
-                    Lanjutkan
-                </ThemedPressable>
+                    <View className="w-full flex gap-4">
+                        <ThemedPressable onPress={handleSignUp} disabled={!name || !email || !phone}>
+                            Lanjutkan
+                        </ThemedPressable>
 
-                <View className="flex flex-row items-center justify-center gap-1">
-                    <ThemedText>
-                        Sudah punya akun?
-                    </ThemedText>
-                    <Pressable onPress={redirectToSignIn}>
-                        <ThemedText type="link" className="text-primary">
-                            Masuk
-                        </ThemedText>
-                    </Pressable>
-                </View>
-            </View>
-        </ThemedView>
+                        <View className="flex flex-row items-center justify-center gap-1">
+                            <ThemedText>Sudah punya akun?</ThemedText>
+                            <Pressable onPress={redirectToSignIn}>
+                                <ThemedText type="link" className="text-primary">Masuk</ThemedText>
+                            </Pressable>
+                        </View>
+                    </View>
+                </ScrollView>
+            </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
     )
 }

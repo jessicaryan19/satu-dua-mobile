@@ -12,7 +12,7 @@ export default function TabTwoScreen() {
   }
 
   return (
-    <ThemedView className='pt-20'>
+    <ThemedView className='pt-20 flex flex-col gap-4 h-full'>
       <ThemedText type='title'>Chat</ThemedText>
       <ThemedPressable onPress={handleSignOut}>
         <ThemedText>Logout</ThemedText>
