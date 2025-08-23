@@ -41,19 +41,24 @@ export class RNCallService {
   public async startAndJoinChannel(): Promise<{ success: boolean; channelName?: string; error?: string }> {
     try {
       const apiEndpoint = `${process.env.EXPO_PUBLIC_AGORA_CREDENTIALS_API}/start-call` || "http://localhost:3000/api/start-call";
-      const res = await fetch(apiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
+      const res = await fetch(apiEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+      });
 
       if (!res.ok) throw new Error(`API request failed: ${res.status} ${res.statusText}`);
-      const data = await res.json();
 
+      const data = await res.json();
       const appId = data.appId;
       const token = data.token;
       const channelName = data.channel || data.channelName;
 
-      if (!appId || !token || !channelName) throw new Error('Invalid response from backend: missing appId, token, or channel');
+      if (!appId || !token || !channelName) {
+        throw new Error('Invalid response from backend: missing appId, token, or channel');
+      }
 
-      // 2. Start Agora engine and join
-      const session = startAndJoinAgoraChannel(
+      // 2. Start Agora engine and join (now async)
+      const session = await startAndJoinAgoraChannel(
         appId,
         token,
         channelName,
@@ -94,7 +99,7 @@ export class RNCallService {
   /** Leave Agora channel and clean up */
   public async leaveChannel(): Promise<void> {
     if (this.state.engine) {
-      leaveAgoraChannel(this.state.engine);
+      await leaveAgoraChannel(this.state.engine); // Now async
       this.state.engine = undefined;
     }
     this.state.joined = false;
@@ -113,5 +118,17 @@ export class RNCallService {
       engine: undefined,
     };
   }
-}
 
+  /** Manual audio control methods */
+  public async muteLocalAudio(muted: boolean): Promise<void> {
+    if (this.state.engine) {
+      this.state.engine.enableLocalAudio(!muted);
+    }
+  }
+
+  public async enableSpeakerphone(enabled: boolean): Promise<void> {
+    if (this.state.engine) {
+      this.state.engine.setEnableSpeakerphone(enabled);
+    }
+  }
+}
