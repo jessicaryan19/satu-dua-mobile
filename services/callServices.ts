@@ -40,7 +40,6 @@ export class RNCallService {
   /** Start a channel on backend and auto-join Agora */
   public async startAndJoinChannel(): Promise<{ success: boolean; channelName?: string; error?: string }> {
     try {
-      // 1. Call backend to start channel
       const apiEndpoint = `${process.env.EXPO_PUBLIC_AGORA_CREDENTIALS_API}/start-call` || "http://localhost:3000/api/start-call";
       const res = await fetch(apiEndpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' } });
 

@@ -10,19 +10,15 @@ import HospitalSvg from "@/assets/illustration/hospital.svg"
 import PoliceSvg from "@/assets/illustration/police.svg"
 import IconCards from '@/components/cards/IconCards';
 import StartCallButton from '@/components/buttons/StartCallButton';
+import { useCurrentLocation } from '@/hooks/useCurrentLocation';
 
 const toTitleCase = (str: string) =>
   str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.slice(1).toLowerCase());
 
 export default function HomeScreen() {
   const { session } = useAuth();
-
-  async function handleSignOut() {
-    const { error } = await signOut();
-    if (error) {
-      console.error("Error signing out:", error);
-    }
-  }
+  const { location } = useCurrentLocation();
+  
   return (
     <ThemedView className='pt-20 flex flex-col gap-4 h-full'>
       <ThemedText type='title' className='text-primary'>Halo, {toTitleCase(session?.user.user_metadata.display_name)}</ThemedText>
@@ -30,8 +26,17 @@ export default function HomeScreen() {
       <View className='flex flex-row p-4 gap-4 rounded-2xl bg-white shadow-[0_8px_25px_0_rgba(0,0,0,0.15)]'>
         <LocationSvg />
         <View className='flex-1 flex flex-col gap-2'>
-          <ThemedText type='defaultSemiBold'>We don’t have your address yet.</ThemedText>
-          <ThemedText>Please allow location access in your phone settings so we can show what’s available near you.</ThemedText>
+          {location ? (
+            <>
+              <ThemedText type='defaultSemiBold'>{location?.formattedAddress?.header}</ThemedText>
+              <ThemedText>{location?.formattedAddress?.detail}</ThemedText>
+            </>
+          ) : (
+            <>
+              <ThemedText type='defaultSemiBold'>We don’t have your address yet.</ThemedText>
+              <ThemedText>Please allow location access in your phone settings so we can show what’s available near you.</ThemedText>
+            </>
+          )}
         </View>
       </View>
 
@@ -43,7 +48,7 @@ export default function HomeScreen() {
           </ThemedText>
         </View>
 
-        <StartCallButton/>
+        <StartCallButton />
       </View>
 
       <View className='flex flex-row p-4 gap-4 justify-center items-center bg-warning-accent border border-warning-default rounded-2xl'>
