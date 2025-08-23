@@ -46,7 +46,7 @@ function RootNavigation() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
 
-      <Stack.Screen name="+not-found" />
+      <Stack.Screen name="+not-found"/>
     </Stack>
   )
 }
