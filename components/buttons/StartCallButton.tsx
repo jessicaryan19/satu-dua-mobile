@@ -1,14 +1,22 @@
 import React, { useRef } from "react";
 import { Pressable, Animated, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
+import { useCall } from "@/hooks/useCall";
 
 export default function StartCallButton() {
+  const { callService, state, refreshState } = useCall();
   const scale = useRef(new Animated.Value(1)).current;
   const holdTimeout = useRef<number | null>(null);
 
   const scale1 = useRef(new Animated.Value(0)).current;
   const scale2 = useRef(new Animated.Value(0)).current;
   const scale3 = useRef(new Animated.Value(0)).current;
+
+  const handleStartCall = async () => {
+    const result = await callService.startAndJoinChannel();
+    refreshState();
+    if (!result.success) console.error(result.error);
+  };
 
   const startPulse = () => {
     Animated.parallel([
@@ -53,8 +61,7 @@ export default function StartCallButton() {
     ]).start();
 
     holdTimeout.current = setTimeout(() => {
-      // TODO: start call here
-      console.log('udh 3 detik')
+      handleStartCall()
     }, 3000)
   };
 

@@ -7,6 +7,7 @@ import '../global.css';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import AuthProvider, { useAuth } from '@/hooks/useAuth';
+import { CallProvider } from '@/hooks/useCall';
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -22,10 +23,12 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <RootNavigation />
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <CallProvider>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <RootNavigation />
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </CallProvider>
     </AuthProvider>
   );
 }
@@ -46,7 +49,7 @@ function RootNavigation() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       </Stack.Protected>
 
-      <Stack.Screen name="+not-found"/>
+      <Stack.Screen name="+not-found" />
     </Stack>
   )
 }

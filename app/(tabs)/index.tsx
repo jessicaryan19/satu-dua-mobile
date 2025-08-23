@@ -2,7 +2,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/hooks/useAuth';
 import { signOut } from '@/services/authServices';
-import { Pressable, View } from 'react-native';
+import { View } from 'react-native';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import LocationSvg from "@/assets/illustration/location.svg"
 import FireStationSvg from "@/assets/illustration/fire-station.svg"
