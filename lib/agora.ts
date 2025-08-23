@@ -4,11 +4,14 @@ import {
   IRtcEngine,
   ChannelProfileType,
   ClientRoleType,
+  AudioProfileType,
+  AudioScenarioType,
 } from 'react-native-agora';
 import { PermissionsAndroid, Platform } from 'react-native';
 
 const requestAudioPermissionAndroid = async (): Promise<boolean> => {
   if (Platform.OS !== 'android') return true;
+
   try {
     const granted = await PermissionsAndroid.request(
       PermissionsAndroid.PERMISSIONS.RECORD_AUDIO,
@@ -32,41 +35,47 @@ export interface AgoraSession {
   channelName: string;
 }
 
-export function startAndJoinAgoraChannel(
+export async function startAndJoinAgoraChannel(
   appId: string,
   token: string,
   channelName: string,
   onJoinSuccess?: (channel: string, uid: number) => void,
   onLeave?: () => void,
   onError?: (err: string) => void
-): AgoraSession | null {
+): Promise<AgoraSession | null> {
   try {
-    // 1. Permissions
-    if (Platform.OS === 'android') {
-      requestAudioPermissionAndroid().then((granted) => {
-        if (!granted) {
-          throw new Error('Microphone permission denied');
-        }
-      });
+    // 1. Check permissions FIRST and AWAIT the result
+    const hasPermission = await requestAudioPermissionAndroid();
+    if (!hasPermission) {
+      throw new Error('Microphone permission denied');
     }
 
     // 2. Create engine
     const engine = createAgoraRtcEngine();
 
-    // 3. Initialize engine
+    // 3. Initialize engine with Communication profile (not LiveBroadcasting)
     engine.initialize({
       appId,
-      channelProfile: ChannelProfileType.ChannelProfileLiveBroadcasting,
+      channelProfile: ChannelProfileType.ChannelProfileCommunication, // CHANGED
     });
 
-    // 4. Enable audio + set role
+    // 4. Enable audio modules
     engine.enableAudio();
+    engine.enableLocalAudio(true); // ADDED - Critical for sending audio
+
+    // 5. Set audio profile for better quality
+    engine.setAudioProfile(
+      AudioProfileType.AudioProfileDefault,
+      AudioScenarioType.AudioScenarioGameStreaming // Good for real-time communication
+    );
+
+    // 6. Set client role (only needed for LiveBroadcasting, but keeping for compatibility)
     engine.setClientRole(ClientRoleType.ClientRoleBroadcaster);
 
-    // 5. Register listeners
+    // 7. Register event listeners with better error handling
     engine.registerEventHandler({
       onJoinChannelSuccess: (connection) => {
-        console.log(`✅ Joined channel ${connection.channelId}`);
+        console.log(`✅ Joined channel ${connection.channelId} with UID ${connection.localUid}`);
         onJoinSuccess?.(connection.channelId ?? "", connection.localUid ?? 0);
       },
       onLeaveChannel: () => {
@@ -75,11 +84,21 @@ export function startAndJoinAgoraChannel(
       },
       onError: (err, msg) => {
         console.error('Agora error:', err, msg);
-        onError?.(msg);
+        onError?.(`Agora Error ${err}: ${msg}`);
       },
+      onLocalAudioStateChanged: (state, reason) => {
+        console.log('🎤 Local audio state changed:', state, 'reason:', reason);
+        // This will help you debug audio issues
+      },
+      onRemoteAudioStateChanged: (connection, state, reason, elapsed) => {
+        console.log('🔊 Remote audio state changed:', state);
+      },
+      onAudioDeviceStateChanged: (deviceId, deviceType, deviceState) => {
+        console.log('🔊 Audio device state changed:', deviceType, deviceState);
+      }
     });
 
-    // 6. Join channel
+    // 8. Join channel
     engine.joinChannel(token, channelName, 0, {});
 
     return { engine, appId, token, channelName };
@@ -90,7 +109,7 @@ export function startAndJoinAgoraChannel(
   }
 }
 
-export function leaveAgoraChannel(engine: IRtcEngine): void {
+export async function leaveAgoraChannel(engine: IRtcEngine): Promise<void> {
   try {
     engine.leaveChannel();
     engine.release();
@@ -98,4 +117,3 @@ export function leaveAgoraChannel(engine: IRtcEngine): void {
     console.error('Error leaving Agora channel:', error);
   }
 }
-
