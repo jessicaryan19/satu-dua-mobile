@@ -4,7 +4,12 @@
     "slug": "satu-dua-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/app-icon.png",
+    "splash": {
+      "image": "./assets/images/splash.png",
+      "resizeMode": "contain", 
+      "backgroundColor": "#172090"
+    },
     "scheme": "satuduamobile",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -39,10 +44,10 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/app-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#172090"
         }
       ],
       [
