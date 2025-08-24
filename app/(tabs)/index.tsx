@@ -48,9 +48,9 @@ export default function HomeScreen() {
 
       <ThemedText type='title' className='text-primary'>Bantuan Terdekat</ThemedText>
       <View className='flex flex-row gap-6 w-full items-start'>
-        <IconCards icon={<HospitalSvg />} name="Rumah Sakit" />
-        <IconCards icon={<PoliceSvg />} name="Kantor Polisi" />
-        <IconCards icon={<FireStationSvg />} name="Pemadam Kebakaran" />
+        <IconCards icon={<HospitalSvg />} name="Rumah Sakit" tag='hospital'/>
+        <IconCards icon={<PoliceSvg />} name="Kantor Polisi" tag='police'/>
+        <IconCards icon={<FireStationSvg />} name="Pemadam Kebakaran" tag='fire_station' />
       </View>
     </ThemedView>
   );
