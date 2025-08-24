@@ -1,7 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/hooks/useAuth';
-import { signOut } from '@/services/authServices';
 import { View } from 'react-native';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import LocationSvg from "@/assets/illustration/location.svg"
@@ -18,7 +17,7 @@ const toTitleCase = (str: string) =>
 export default function HomeScreen() {
   const { session } = useAuth();
   const { location } = useCurrentLocation();
-  
+
   return (
     <ThemedView className='pt-20 flex flex-col gap-4 h-full'>
       <ThemedText type='title' className='text-primary'>Halo, {toTitleCase(session?.user.user_metadata.display_name)}</ThemedText>
@@ -26,17 +25,8 @@ export default function HomeScreen() {
       <View className='flex flex-row p-4 gap-4 rounded-2xl bg-white shadow-[0_8px_25px_0_rgba(0,0,0,0.15)]'>
         <LocationSvg />
         <View className='flex-1 flex flex-col gap-2'>
-          {location ? (
-            <>
-              <ThemedText type='defaultSemiBold'>{location?.formattedAddress?.header}</ThemedText>
-              <ThemedText>{location?.formattedAddress?.detail}</ThemedText>
-            </>
-          ) : (
-            <>
-              <ThemedText type='defaultSemiBold'>We don’t have your address yet.</ThemedText>
-              <ThemedText>Please allow location access in your phone settings so we can show what’s available near you.</ThemedText>
-            </>
-          )}
+              <ThemedText type='defaultSemiBold'>{location ? location?.formattedAddress?.header : "We don’t have your address yet."}</ThemedText>
+              <ThemedText>{location ? location?.formattedAddress?.detail : "Please allow location access in your phone settings so we can show what’s available near you."}</ThemedText>
         </View>
       </View>
 
@@ -44,7 +34,7 @@ export default function HomeScreen() {
         <View className='flex-1 flex gap-2'>
           <ThemedText type='subtitle' className='text-white'>Darurat?</ThemedText>
           <ThemedText className='text-white'>
-            Tekan dan tahan tombol ini 3 detik untuk langsung menghubungi 112.
+            Tekan dan tahan tombol ini <ThemedText type='defaultSemiBold'>3 detik</ThemedText> untuk langsung menghubungi <ThemedText type='defaultSemiBold'>112</ThemedText>.
           </ThemedText>
         </View>
 

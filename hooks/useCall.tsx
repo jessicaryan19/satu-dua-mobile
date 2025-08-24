@@ -14,11 +14,14 @@ export const CallProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const callServiceRef = useRef(new RNCallService({
     onError: (err) => console.error('Call error:', err),
     onChannelJoined: () => refreshState(),
-    onChannelLeft: () => refreshState(),
+    onChannelLeft: () => {
+        callServiceRef.current.cleanup()
+        refreshState()
+    },
+    onUserJoined: () => refreshState()
   }));
 
   const [state, setState] = useState<RNCallState>(callServiceRef.current.getState());
-
   const refreshState: () => void = () => setState(callServiceRef.current.getState());
 
   return (

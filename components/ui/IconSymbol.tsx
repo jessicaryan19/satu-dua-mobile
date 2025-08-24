@@ -20,9 +20,12 @@ const MAPPING = {
   'chevron.right': 'chevron-right',
   'bubble.left.fill': 'chat',
   'book.fill': 'book',
-  'person.crop.circle.fill': 'person',
+  'person.fill': 'person',
   'phone.fill': 'phone',
-  'exclamationmark.triangle.fill': 'warning'
+  'phone.down.fill': 'phone-disabled',
+  'exclamationmark.triangle.fill': 'warning',
+  'speaker.3.fill': 'speaker',
+  'mic.slash.fill': 'mic-off'
 } as IconMapping;
 
 /**

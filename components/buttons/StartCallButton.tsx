@@ -2,20 +2,19 @@ import React, { useRef } from "react";
 import { Pressable, Animated, View } from "react-native";
 import { IconSymbol } from "../ui/IconSymbol";
 import { useCall } from "@/hooks/useCall";
+import { useRouter } from "expo-router";
 
 export default function StartCallButton() {
-  const { callService, state, refreshState } = useCall();
   const scale = useRef(new Animated.Value(1)).current;
   const holdTimeout = useRef<number | null>(null);
+  const router = useRouter()
 
   const scale1 = useRef(new Animated.Value(0)).current;
   const scale2 = useRef(new Animated.Value(0)).current;
   const scale3 = useRef(new Animated.Value(0)).current;
 
   const handleStartCall = async () => {
-    const result = await callService.startAndJoinChannel();
-    refreshState();
-    if (!result.success) console.error(result.error);
+    router.push({ pathname: '/call-ongoing' });
   };
 
   const startPulse = () => {

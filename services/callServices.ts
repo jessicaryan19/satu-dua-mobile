@@ -9,12 +9,14 @@ export interface RNCallState {
   isChannelOwner: boolean;
   joined: boolean;
   engine?: IRtcEngine;
+  hasRemoteUser: boolean;
 }
 
 export interface RNCallCallbacks {
   onError?: (error: string) => void;
   onChannelJoined?: (channelName: string) => void;
   onChannelLeft?: () => void;
+  onUserJoined?: () => void;
 }
 
 export class RNCallService {
@@ -25,6 +27,7 @@ export class RNCallService {
     isChannelOwner: false,
     joined: false,
     engine: undefined,
+    hasRemoteUser: false,
   };
 
   private callbacks: RNCallCallbacks = {};
@@ -72,6 +75,10 @@ export class RNCallService {
         },
         (err) => {
           this.callbacks.onError?.(err);
+        },
+        () => {
+          this.state.hasRemoteUser = true;
+          this.callbacks.onUserJoined?.();
         }
       );
 
@@ -99,10 +106,11 @@ export class RNCallService {
   /** Leave Agora channel and clean up */
   public async leaveChannel(): Promise<void> {
     if (this.state.engine) {
-      await leaveAgoraChannel(this.state.engine); // Now async
+      await leaveAgoraChannel(this.state.engine);
       this.state.engine = undefined;
     }
     this.state.joined = false;
+    this.state.hasRemoteUser = false;
     this.callbacks.onChannelLeft?.();
   }
 
@@ -116,6 +124,7 @@ export class RNCallService {
       isChannelOwner: false,
       joined: false,
       engine: undefined,
+      hasRemoteUser: false
     };
   }
 
@@ -123,12 +132,14 @@ export class RNCallService {
   public async muteLocalAudio(muted: boolean): Promise<void> {
     if (this.state.engine) {
       this.state.engine.enableLocalAudio(!muted);
+      console.log(`🔇 Mute audio: ${muted}`);
     }
   }
 
   public async enableSpeakerphone(enabled: boolean): Promise<void> {
     if (this.state.engine) {
       this.state.engine.setEnableSpeakerphone(enabled);
+      console.log(`🔊 Enable speakerphone: ${enabled}`);
     }
   }
 }

@@ -47,6 +47,7 @@ function RootNavigation() {
 
       <Stack.Protected guard={session !== null}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+        <Stack.Screen name='call-ongoing' options={{ headerShown: false }} />
       </Stack.Protected>
 
       <Stack.Screen name="+not-found" />

@@ -5,7 +5,7 @@ import { useThemeColor } from '@/hooks/useThemeColor';
 export type ThemedTextProps = TextProps & {
   lightColor?: string;
   darkColor?: string;
-  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'danger';
+  type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link' | 'danger' | 'strong';
   className?: string;
 };
 
@@ -30,6 +30,7 @@ export function ThemedText({
         type === 'subtitle' ? styles.subtitle : undefined,
         type === 'link' ? styles.link : undefined,
         type === 'danger' ? styles.danger : undefined,
+        type === 'strong' ? styles.strong : undefined,
         { fontFamily: 'Nunito' },
         style,
       ]}
@@ -64,5 +65,9 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 24,
     color: '#AB0101'
+  },
+  strong: {
+    fontSize: 72,
+    fontWeight: '900',
   }
 });

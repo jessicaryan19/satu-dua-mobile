@@ -41,7 +41,8 @@ export async function startAndJoinAgoraChannel(
   channelName: string,
   onJoinSuccess?: (channel: string, uid: number) => void,
   onLeave?: () => void,
-  onError?: (err: string) => void
+  onError?: (err: string) => void,
+  onUserJoined?: () => void,
 ): Promise<AgoraSession | null> {
   try {
     // 1. Check permissions FIRST and AWAIT the result
@@ -49,7 +50,6 @@ export async function startAndJoinAgoraChannel(
     if (!hasPermission) {
       throw new Error('Microphone permission denied');
     }
-
     // 2. Create engine
     const engine = createAgoraRtcEngine();
 
@@ -88,14 +88,21 @@ export async function startAndJoinAgoraChannel(
       },
       onLocalAudioStateChanged: (state, reason) => {
         console.log('🎤 Local audio state changed:', state, 'reason:', reason);
-        // This will help you debug audio issues
       },
       onRemoteAudioStateChanged: (connection, state, reason, elapsed) => {
         console.log('🔊 Remote audio state changed:', state);
       },
       onAudioDeviceStateChanged: (deviceId, deviceType, deviceState) => {
         console.log('🔊 Audio device state changed:', deviceType, deviceState);
-      }
+      },
+      onUserOffline(connection, remoteUid, reason) {
+        console.log(`❌ User ${remoteUid} offline. Reason: ${reason}`)
+        onLeave?.();
+      },
+      onUserJoined(connection, remoteUid, elapsed) {
+        console.log(`✅ User ${remoteUid} joined.`);
+        onUserJoined?.()
+      },
     });
 
     // 8. Join channel
