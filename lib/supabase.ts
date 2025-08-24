@@ -5,6 +5,7 @@ import { createClient, processLock } from '@supabase/supabase-js'
 
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL as string;
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_KEY as string;
+const schema = process.env.EXPO_PUBLIC_SCHEMA as string
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
@@ -14,6 +15,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: false,
     lock: processLock,
   },
+  db: { schema: schema }
 })
 
 // Tells Supabase Auth to continuously refresh the session automatically

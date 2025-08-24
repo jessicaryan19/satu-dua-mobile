@@ -24,12 +24,11 @@ export default function SignUpScreen() {
         const emailFormatted = email.toLowerCase();
         const nameFormatted = name.trim().toUpperCase();
 
-        const { data, error } = await signUpWithOtp(emailFormatted, phoneFormatted, nameFormatted);
+        const { error } = await signUpWithOtp(emailFormatted, phoneFormatted, nameFormatted);
         if (error) {
             console.error("Error signing up:", error);
             return;
         }
-        console.log(data);
         router.push({ pathname: '/otp-verification', params: { email: emailFormatted, phone: phoneFormatted, name: nameFormatted } });
     }
 

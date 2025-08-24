@@ -18,12 +18,11 @@ export default function SignInScreen() {
     }
 
     async function handleSignIn() {
-        const { data, error } = await signInWithOtp(email);
+        const { error } = await signInWithOtp(email);
         if (error) {
             setError("Email tidak terdaftar. Silakan daftar terlebih dahulu.");
             return;
         }
-        console.log(data);
         router.push({ pathname: '/otp-verification', params: { email: email } });
     }
 

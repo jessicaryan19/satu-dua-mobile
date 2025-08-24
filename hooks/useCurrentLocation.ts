@@ -5,13 +5,19 @@ type FormattedAddress = {
     header: string,
     detail: string
 }
+export type LocationDB = {
+    kecamatan: string,
+    kelurahan: string,
+    detail_address: string
+}
 type LocationData = {
     coords: {
         latitude: number;
         longitude: number;
     };
     address?: Location.LocationGeocodedAddress;
-    formattedAddress?: FormattedAddress
+    formattedAddress?: FormattedAddress,
+    locationDb?: LocationDB
 };
 
 export function useCurrentLocation() {
@@ -45,7 +51,6 @@ export function useCurrentLocation() {
                 ].filter(Boolean);
                 
                 const addressDetail = detailParts.join(", ");
-
                 setLocation({
                     coords: {
                         latitude: currentLocation.coords.latitude,
@@ -55,6 +60,11 @@ export function useCurrentLocation() {
                     formattedAddress: {
                         header: addressHeader ?? '',
                         detail: addressDetail ?? ''
+                    },
+                    locationDb: {
+                        kecamatan: address.district ?? '',
+                        kelurahan: address.subregion ?? '',
+                        detail_address: `${addressHeader ?? ''}, ${addressDetail}`
                     }
                 });
             } catch (err) {

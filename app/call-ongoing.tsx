@@ -4,20 +4,23 @@ import { View, Pressable } from "react-native";
 import { useCall } from "@/hooks/useCall"; // Import the hook
 import { useEffect, useState } from "react"; // Import useState
 import { useRouter } from "expo-router";
+import { insertCall } from "@/services/dbServices";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useAuth } from "@/hooks/useAuth";
 
 export default function CallOngoingScreen() {
     const { callService, state, refreshState } = useCall();
     const [isMuted, setIsMuted] = useState(false);
     const [isSpeakerEnabled, setIsSpeakerEnabled] = useState(false);
     const [elapsedSeconds, setElapsedSeconds] = useState(0);
-    const router = useRouter()
+    const [hasInserted, setHasInserted] = useState(false);
+    const [hasStarted, setHasStarted] = useState(false);
 
-    console.log(state)
-    const handleStartCall = async () => {
-        const result = await callService.startAndJoinChannel();
-        refreshState();
-        if (!result.success) console.error(result.error);
-    }
+    const router = useRouter()
+    const { location } = useCurrentLocation()
+    const { session } = useAuth()
+
+
 
     const handleEndCall = async () => {
         await callService.leaveChannel();
@@ -38,8 +41,30 @@ export default function CallOngoingScreen() {
     };
 
     useEffect(() => {
-        handleStartCall()
+        const handleStartCall = async () => {
+            if (hasStarted) return;
+            
+            const result = await callService.startAndJoinChannel();
+            setHasStarted(true)
+            refreshState();
+            if (!result.success) console.error(result.error);
+        }
+        handleStartCall();
     }, []);
+
+    useEffect(() => {
+        const handleInsertCall = async () => {
+            if (hasInserted) return;
+            if (state.channelName && session?.user.id && location?.locationDb) {
+                const { data, error } = await insertCall(state.channelName, session.user.id, location.locationDb);
+                setHasInserted(true)
+
+                console.log('call', data)
+                if (error) console.log(error);
+            }
+        }
+        handleInsertCall();
+    }, [state.channelName, session?.user.id, location?.locationDb]);
 
     useEffect(() => {
         let timerInterval: number;

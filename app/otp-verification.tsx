@@ -4,7 +4,7 @@ import { ThemedText } from "@/components/ThemedText";
 import ThemedPressable from "@/components/ThemedPressable";
 import { OtpInput } from "react-native-otp-entry";
 import { useState } from "react";
-import { signInWithOtp, signUpWithOtp, verifyOtp } from "@/services/authServices";
+import { insertUser, signInWithOtp, signUpWithOtp, verifyOtp } from "@/services/authServices";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCountdown } from "@/hooks/useCountdown";
 import { AuthUserData } from "@/types/auth";
@@ -23,7 +23,18 @@ export default function OTPVerificationScreen() {
             setError("OTP tidak valid atau kedaluwarsa. Silakan coba lagi.");
             return;
         }
-        console.log(data)
+
+        const userId = data?.user?.user_metadata.sub!;
+        if (!userId) {
+            console.error("No user ID returned from signUpWithOtp");
+            return;
+        }
+
+        const { data: dbData, error: dbError } = await insertUser(userId, name!, phone!);
+        if (dbError) {
+            console.error("Error inserting user:", dbError);
+            return;
+        }
         router.push('/(tabs)');
     }
 

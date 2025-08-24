@@ -1,6 +1,7 @@
 import { supabase } from '@/lib/supabase';
+import { AuthError, User } from '@supabase/supabase-js';
 
-export const signUpWithOtp = async (email: string, phone: string, name: string) => {
+export const signUpWithOtp = async (email: string, phone: string, name: string): Promise<{ data: { user: User | null }, error: AuthError | null }> => {
     const { data, error } = await supabase.auth.signInWithOtp({
         email: email,
         phone: phone,
@@ -8,11 +9,25 @@ export const signUpWithOtp = async (email: string, phone: string, name: string) 
             shouldCreateUser: true,
             data: {
                 display_name: name,
+                phone_number: phone,
             }
         }
     });
     return { data, error };
 };
+
+export const insertUser = async (id: string, name: string, phone_number: string) => {
+    const { data, error } = await supabase
+        .from("users")
+        .insert([
+            {
+                id: id,
+                name: name,
+                phone_number: phone_number,
+            }
+        ]);
+    return { data, error }
+}
 
 export const signInWithOtp = async (email: string) => {
     const { data, error } = await supabase.auth.signInWithOtp({
@@ -39,7 +54,7 @@ export const signOut = async () => {
 };
 
 export async function getCurrentUser() {
-  const { data: { user }, error } = await supabase.auth.getUser();
-  if (error || !user) throw error || new Error("No logged-in user");
-  return user;
+    const { data: { user }, error } = await supabase.auth.getUser();
+    if (error || !user) throw error || new Error("No logged-in user");
+    return user;
 }
