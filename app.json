@@ -22,7 +22,12 @@
         "backgroundColor": "#ffffff"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.jessicaryan19.satuduamobile"
+      "package": "com.jessicaryan19.satuduamobile",
+      "permissions": [
+        "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -43,13 +48,15 @@
       [
         "expo-location",
         {
-          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
+          "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location.",
+          "locationWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location while you are using the app."
         }
       ],
       [
         "expo-audio",
         {
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone."
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone.",
+          "androidRecordAudioPermission": "Allow $(PRODUCT_NAME) to record audio."
         }
       ]
     ],
