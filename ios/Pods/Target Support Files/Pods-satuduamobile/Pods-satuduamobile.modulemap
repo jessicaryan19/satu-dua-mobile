@@ -1,0 +1,6 @@
+module Pods_satuduamobile {
+  umbrella header "Pods-satuduamobile-umbrella.h"
+
+  export *
+  module * { export * }
+}
