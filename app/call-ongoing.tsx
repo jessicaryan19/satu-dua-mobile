@@ -20,7 +20,7 @@ export default function CallOngoingScreen() {
     const { location } = useCurrentLocation()
     const { session } = useAuth()
 
-
+    console.log(state)
 
     const handleEndCall = async () => {
         await callService.leaveChannel();
@@ -43,7 +43,7 @@ export default function CallOngoingScreen() {
     useEffect(() => {
         const handleStartCall = async () => {
             if (hasStarted) return;
-            
+
             const result = await callService.startAndJoinChannel();
             setHasStarted(true)
             refreshState();
